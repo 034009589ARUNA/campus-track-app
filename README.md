@@ -1,50 +1,52 @@
-# Welcome to your Expo app 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+🎓 Campus Tracking App (EduChain Pulse)
+📌  Project Overview
+The Student Tracking App is a digital platform designed to modernize attendance management, academic record-keeping, and student engagement.
+It leverages:
+•	AI → for attendance verification (GPS + face recognition) and mentorship/job recommendations.
+•	Blockchain → for tamper-proof academic records and verifiable digital certificates.
+•	React & Node.js → for a scalable, cross-platform application.
+This project is my submission for the Big 5 AI & Blockchain Hackathon, focusing on Human Capital Development, Youth Empowerment, and Tech Infrastructure.
+________________________________________
+🚀 Features
+✅ Smart Attendance System – Students mark attendance only with AI verification (GPS + facial recognition).
+✅ AI Recommendations – ChatGPT API suggests study resources, mentorship, and job opportunities.
+✅ Blockchain Credentials – Certificates and attendance stored on-chain for authenticity.
+✅ Multi-Platform Support – Built with React + React Native for web and mobile use.
+________________________________________
+🛠️ Tech Stack
+•	Frontend: React, React Native
+•	Backend: Node.js, Express
+•	Database: MongoDB / Firebase
+•	AI Integration: OpenCV.js / TensorFlow.js, ChatGPT API
+•	Blockchain: Ethereum (Solidity Smart Contracts) or Hyperledger
+________________________________________
+🎯 Impact
+•	Students: Fraud-free certificates, career guidance, and skill visibility.
+•	Universities: Transparent record system and reduced attendance fraud.
+•	Government (YES Program): Reliable youth skills data and employment tracking.
+________________________________________
+📂 Project Status
+This is an active prototype. Current progress:
+•	✅ UI/UX Design (Figma)
+•	✅ React Frontend Setup
+•	🔄 Backend Integration (in progress)
+•	🔄 AI & Blockchain Modules (upcoming)
+________________________________________
+🎨 UI Preview
+👉 View Figma Design Here: https://www.figma.com/design/XitFYK9oTZscCfR30pKELF/student-tracking-app?node-id=1-2&t=JsxcBHu0bxirXB2D-0
+________________________________________
+👨‍💻 Author
+Aruna Kallon
+•	Electrical & Electronics Engineering Student (Fourah Bay College)
+•	Passionate about AI, Blockchain, and Educational Technology
+•	LinkedIn | Portfolio
+________________________________________
+📌 Next Steps
+•	Implement AI attendance verification
+•	Deploy smart contract for blockchain-based record keeping
+•	Expand to support student performance analytics
+________________________________________
+🔥 With this app, education in Sierra Leone can move towards a fraud-free, transparent, and youth-empowered future.
+________________________________________
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
