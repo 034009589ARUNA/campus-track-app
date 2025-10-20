@@ -4,7 +4,7 @@ import { Image, ScrollView, StatusBar, StyleSheet, Text, View } from "react-nati
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import DashboardCard from "../components/DashboardCard";
 
-export default function Dashboard() {
+export default function HomeScreen() {
   const navigation = useNavigation();
   const [attendance, setAttendance] = useState("Not marked yet");
   const [assignment, setAssignment] = useState("You have a pending assignment");
@@ -35,8 +35,7 @@ export default function Dashboard() {
               </View>
               
               <View style={styles.welcomeSection}>
-                <Text style={styles.welcomeText}>Welcome Back!</Text>
-                <Text style={styles.welcomeSubtext}>Here's your student dashboard</Text>
+                <Text style={styles.welcomeText}>Welcome, Mr Kamara!</Text>
               </View>
             </View>
 
@@ -47,20 +46,20 @@ export default function Dashboard() {
               {/* Dashboard cards */}
               <View style={styles.cardsRow}>
                 <DashboardCard
-                  title="Attendance"
+                  title="Start Session"
                   message={attendance}
-                  icon="calendar-check"
+                  icon="play-circle"
                   backgroundColor="#FFFFFF"
                   textColor="#333"
                   onPress={() => {
-                    setAttendance("Present ✅");
-                    navigation.navigate("Attendance");
+                    setAttendance("Started ✅");
+                    navigation.navigate("Classes");
                   }}
                 />
                 <DashboardCard
-                  title="Assignment"
+                  title="View Assignment"
                   message={assignment}
-                  icon="book-open-page-variant"
+                  icon="book"
                   backgroundColor="#FFFFFF"
                   textColor="#333"
                   onPress={() => navigation.navigate("Assignment")}
@@ -69,7 +68,7 @@ export default function Dashboard() {
               
               <View style={styles.cardsRow}>
                 <DashboardCard
-                  title="Messages"
+                  title="Send Code"
                   message={messages}
                   icon="message-text"
                   backgroundColor="#FFFFFF"
@@ -77,9 +76,9 @@ export default function Dashboard() {
                   onPress={() => setMessages("Code received ✔")}
                 />
                 <DashboardCard
-                  title="Subjects Enrolled"
+                  title="Student List"
                   message={`${subjects} subjects`}
-                  icon="school"
+                  icon="account-group"
                   backgroundColor="#FFFFFF"
                   textColor="#333"
                   onPress={() => navigation.navigate("Settings")}
@@ -141,10 +140,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
     marginBottom: 4,
-  },
-  welcomeSubtext: {
-    fontSize: 14,
-    color: "rgba(255, 255, 255, 0.9)",
   },
   dashboardContent: {
     backgroundColor: "white",

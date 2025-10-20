@@ -1,245 +1,440 @@
-// components/LoginScreen.tsx
+import { useNavigation } from '@react-navigation/native'; // ✅ added
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useState } from "react";
-import { Image, KeyboardAvoidingView, Platform, ScrollView, StatusBar, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { RootStackParamList } from "../App";
-
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
-/// remember me component
-function RememberMeSwitch() {
-  const [rememberMe, setRememberMe] = useState(false);
-
-  return (
-    <View style={style4.rememberRow}>
-      <Text style={style4.label}>Remember Me</Text>
-      <Switch
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        thumbColor={rememberMe ? "#17ba0fff" : "#f4f3f4"}
-        ios_backgroundColor="#3e3e3e" 
-        value={rememberMe}
-        onValueChange={() => setRememberMe(prev => !prev)}
-      />
-    </View>
-  );
-}
-
-const style4 = StyleSheet.create({
-  rememberRow: {
-    flexDirection: "row",
-    alignItems: "center",
-   
-  },
-  label: {
-    fontSize: 16,
-    color: "white",
-  },
-});
-
-// Choice component
-function Choice() {
-  return (
-    <View style={styles2.container}>
-      <Text style={styles2.leftText}>Lecturer</Text>
-      <Text style={styles2.rightText}>Student</Text>
-    </View>
-  );
-}
-
-/// Toggle between Lecturer and Student
-/// Toggle for lecturer
-function Toggle() {
-  const [isLeftEnabled, setIsLeftEnabled] = useState(false);
-  const [isRightEnabled, setIsRightEnabled] = useState(false);
-
-  return (
-    <View style={style3.container}>
-      <View style={style3.row}>
-        {/* Left Switch */}
-        <Switch
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        thumbColor={isLeftEnabled ? "#00284B" : "#f4f3f4"}
-        ios_backgroundColor="#3e3e3e"
-          value={isLeftEnabled}
-          onValueChange={() => setIsLeftEnabled(prev => !prev)}
-        />
-
-        {/* Right Switch */}
-        <Switch
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        thumbColor={isRightEnabled ? "#00284B" : "#f4f3f4"}
-        ios_backgroundColor="#3e3e3e"
-          value={isRightEnabled}
-          onValueChange={() => setIsRightEnabled(prev => !prev)}
-        />
-    </View>
-    </View>
-  );
-}
-
-const style3 = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center", // center vertically
-    paddingHorizontal: 20,
-  },
-  row: {
-    flexDirection: "row",      // horizontal row
-    justifyContent: "space-between", // space switches apart
-    alignItems: "center",      // align vertically
-  },
-});
-
-
-export default function LoginScreen({ navigation }: Props) {
+function LoginScreen({ navigation }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [userType, setUserType] = useState("student"); // "student" or "lecturer"
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    navigation.replace("Home");
+  const navigations = useNavigation(); // ✅ added
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
-return (
-  <>
-    <StatusBar backgroundColor="#1B72B5" barStyle="light-content" /> 
-    <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#1B72B5" }} edges={['top', 'left', 'right']} >
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert("Validation Error", "Please fill in all fields");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert("Invalid Email", "Please enter a valid email address");
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert("Weak Password", "Password must be at least 6 characters");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Simulate API call
+      setTimeout(() => {
+        setIsLoading(false);
+        // Navigate to Device Verification screen
+        navigation.replace("DeviceVerification", { studentEmail: email });
+      }, 1500);
+    } catch (error) {
+      setIsLoading(false);
+      Alert.alert("Login Error", "An error occurred during login");
+    }
+  };
+
+  const handleForgotPassword = () => {
+    navigation.navigate("ForgotPassword");
+  };
+
+  const handleSignUp = () => {
+    navigations.navigate("SignupForm");
+  };
+
+  return (
+    <>
+      <StatusBar backgroundColor="#1B72B5" barStyle="light-content" />
+      <SafeAreaProvider>
+        <SafeAreaView
+          style={styles.safeArea}
+          edges={["top", "left", "right"]}
         >
-          <ScrollView
-            contentContainerStyle={styles.scrollContainer}
-            keyboardShouldPersistTaps="handled" 
+          <KeyboardAvoidingView
+            style={styles.keyboardView}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
-            <View style={styles.container}>
-              <Image 
-                source={require("../assets/images/image2.png")}
-                style={{width: 180, height: 172, marginBottom: 20, alignSelf: 'center'}}
-              />
-              <Text style={styles.h1}>Connect to your classes </Text>
-              <Text style={styles.p}>Stay on top of your classes, assignments, and attendance</Text>
-              <TextInput
-                placeholder="Email/Reg. Number"
-                value={email}
-                onChangeText={setEmail}
-                style={styles.input}
-              />
-              <TextInput
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                style={styles.input}
-              />
-<RememberMeSwitch />
-<Choice />
-<Toggle />
-              <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Login</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => {}}>
-              <Text style={styles.h2}>Forget password?</Text>
-              </TouchableOpacity>
-              <Text style={styles.p2}>Need an account? <TouchableOpacity onPress={() => {}}> <Text style={styles.h3}>Sign Up</Text>
+            <ScrollView
+              contentContainerStyle={styles.scrollContainer}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.container}>
+                {/* Logo */}
+                <View style={styles.logoContainer}>
+                  <Image
+                    source={require("../assets/images/image2.png")}
+                    style={styles.logo}
+                  />
+                </View>
+
+                {/* Header Text */}
+                <Text style={styles.title}>Connect to Your Classes</Text>
+                <Text style={styles.subtitle}>
+                  Stay on top of your classes, assignments, and attendance
+                </Text>
+
+                {/* User Type Selection */}
+                <View style={styles.userTypeContainer}>
+                  <Text style={styles.userTypeLabel}>Login As</Text>
+                  <View style={styles.userTypeButtons}>
+                    <TouchableOpacity
+                      style={[
+                        styles.userTypeButton,
+                        userType === "student" && styles.userTypeButtonActive,
+                      ]}
+                      onPress={() => setUserType("student")}
+                    >
+                      <Icon
+                        name="account-multiple"
+                        size={20}
+                        color={userType === "student" ? "#FFFFFF" : "#999"}
+                      />
+                      <Text
+                        style={[
+                          styles.userTypeButtonText,
+                          userType === "student" && styles.userTypeButtonTextActive,
+                        ]}
+                      >
+                        Student
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[
+                        styles.userTypeButton,
+                        userType === "lecturer" && styles.userTypeButtonActive,
+                      ]}
+                      onPress={() => setUserType("lecturer")}
+                    >
+                      <Icon
+                        name="school"
+                        size={20}
+                        color={userType === "lecturer" ? "#FFFFFF" : "#999"}
+                      />
+                      <Text
+                        style={[
+                          styles.userTypeButtonText,
+                          userType === "lecturer" && styles.userTypeButtonTextActive,
+                        ]}
+                      >
+                        Lecturer
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Form Inputs */}
+                <View style={styles.formContainer}>
+                  {/* Email Input */}
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Email or Registration Number</Text>
+                    <View style={styles.inputWrapper}>
+                      <Icon name="email" size={20} color="#1B72B5" style={styles.inputIcon} />
+                      <TextInput
+                        placeholder="Enter your email or reg number"
+                        placeholderTextColor="#999"
+                        value={email}
+                        onChangeText={setEmail}
+                        style={styles.input}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        editable={!isLoading}
+                      />
+                    </View>
+                  </View>
+
+                  {/* Password Input */}
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Password</Text>
+                    <View style={styles.inputWrapper}>
+                      <Icon name="lock" size={20} color="#1B72B5" style={styles.inputIcon} />
+                      <TextInput
+                        placeholder="Enter your password"
+                        placeholderTextColor="#999"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry={!showPassword}
+                        style={styles.input}
+                        editable={!isLoading}
+                      />
+                      <TouchableOpacity
+                        onPress={() => setShowPassword(!showPassword)}
+                      >
+                        <Icon
+                          name={showPassword ? "eye" : "eye-off"}
+                          size={20}
+                          color="#1B72B5"
+                          style={styles.eyeIcon}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  {/* Remember Me */}
+                  <View style={styles.rememberMeRow}>
+                    <TouchableOpacity
+                      style={styles.checkbox}
+                      onPress={() => setRememberMe(!rememberMe)}
+                    >
+                      <Icon
+                        name={rememberMe ? "checkbox-marked" : "checkbox-blank-outline"}
+                        size={24}
+                        color={rememberMe ? "#1B72B5" : "#CCC"}
+                      />
+                    </TouchableOpacity>
+                    <Text style={styles.rememberMeText}>Remember me</Text>
+                  </View>
+                </View>
+
+                {/* Login Button */}
+                <TouchableOpacity
+                  style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
+                  onPress={handleLogin}
+                  disabled={isLoading}
+                  activeOpacity={0.8}
+                >
+                  {isLoading ? (
+                    <ActivityIndicator color="#FFFFFF" size="small" />
+                  ) : (
+                    <>
+                      <Icon name="login" size={20} color="#FFFFFF" style={styles.buttonIcon} />
+                      <Text style={styles.loginButtonText}>Login</Text>
+                    </>
+                  )}
                 </TouchableOpacity>
-              </Text>
-            </View>
-          </ScrollView> 
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </SafeAreaProvider>
-  </>
-);
+
+                {/* Forgot Password */}
+                <TouchableOpacity onPress={handleForgotPassword}>
+                  <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+                </TouchableOpacity>
+
+                {/* Divider */}
+                <View style={styles.divider} />
+
+                {/* Sign Up */}
+                <View style={styles.signUpContainer}>
+                  <Text style={styles.signUpText}>Don't have an account? </Text>
+                  <TouchableOpacity onPress={handleSignUp}>
+                    <Text style={styles.signUpLink}>Sign Up</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </>
+  );
 }
 
+export default LoginScreen;
+
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20, backgroundColor: '#1B72B5' },
-  input: { borderWidth: 1, padding: 10, marginBottom: 10, borderRadius: 20, color: 'black', backgroundColor: 'white' },
-  button: {
-    backgroundColor: "#00284B",      // Green button
-    paddingVertical: 16,              // Vertical height of button
-    paddingHorizontal: 40,            // Horizontal padding
-    borderRadius: 100,                 // Rounded corners
-    alignItems: "center",             // Center text
-    marginTop: 20,                    // Space from inputs
-    shadowColor: "#000",              // Shadow (iOS)
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    elevation: 5 ,
-    padding: 20,
-    marginBottom: 1                    // Shadow for Android
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#1B72B5",
   },
-  buttonText: {
-    color: "#fff",                    // White text
-    fontSize: 18,                     // Larger text
-    fontWeight: "700"                 // Bold
-  },
-  h1: {
-    fontSize: 20,       // Large font size like <h1>
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: 'white',
-    textAlign: 'center'  // Center the text
-  },
-  p: {
-    fontSize: 14,       // Large font size like <h1>
-    fontWeight: "bold",
-    marginBottom: 50,
-    color: 'white',
-    textAlign: 'center'  // Center the text
+  keyboardView: {
+    flex: 1,
   },
   scrollContainer: {
-    flexGrow: 1, // ✅ prevents extra space when keyboard is hidden
-    justifyContent: "center"
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingVertical: 20,
   },
-  h2: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: 'white',
-    textAlign: 'center'  // Center the text
-  },
-  p2: {
-    fontSize: 14,
-    marginBottom: 20,
-    color: 'white',
-    textAlign: 'center'  // Center the text
-  },
-  h3: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: '#00284B',
-    marginTop: 5  },
-    h4: {
-      fontSize: 16,
-      fontWeight: "bold",
-      color: 'white',
-      marginBottom: 10,
-      marginTop: 5,
-      textAlign: 'left'  // Center the text
-    }
-});
-
-const styles2 = StyleSheet.create({
   container: {
-    flexDirection: "row",         // put items in a row
-    justifyContent: "space-between", // push them to edges
-    alignItems: "center",         // align vertically
-    paddingHorizontal: 20,        // space from screen edges
-
+    paddingHorizontal: 20,
   },
-  leftText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#fff",
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 30,
   },
-  rightText: {
-    fontSize: 18,
+  logo: {
+    width: 140,
+    height: 140,
+    resizeMode: "contain",
+  },
+  title: {
+    fontSize: 26,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#FFFFFF",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "rgba(255, 255, 255, 0.9)",
+    textAlign: "center",
+    marginBottom: 30,
+    lineHeight: 20,
+  },
+  userTypeContainer: {
+    marginBottom: 30,
+  },
+  userTypeLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "rgba(255, 255, 255, 0.9)",
+    marginBottom: 12,
+  },
+  userTypeButtons: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  userTypeButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+    gap: 8,
+  },
+  userTypeButtonActive: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "#FFFFFF",
+  },
+  userTypeButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "rgba(255, 255, 255, 0.7)",
+  },
+  userTypeButtonTextActive: {
+    color: "#1B72B5",
+  },
+  formContainer: {
+    marginBottom: 20,
+  },
+  inputGroup: {
+    marginBottom: 18,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "rgba(255, 255, 255, 0.9)",
+    marginBottom: 8,
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 14,
+    paddingHorizontal: 0,
+    fontSize: 16,
+    color: "#333",
+  },
+  eyeIcon: {
+    marginLeft: 10,
+  },
+  rememberMeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  checkbox: {
+    marginRight: 10,
+  },
+  rememberMeText: {
+    fontSize: 14,
+    color: "rgba(255, 255, 255, 0.9)",
+    fontWeight: "500",
+  },
+  loginButton: {
+    backgroundColor: "#00284B",
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  loginButtonDisabled: {
+    opacity: 0.7,
+  },
+  buttonIcon: {
+    marginRight: 10,
+  },
+  loginButtonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  forgotPasswordText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#FFFFFF",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    marginVertical: 20,
+  },
+  signUpContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  signUpText: {
+    fontSize: 14,
+    color: "rgba(255, 255, 255, 0.9)",
+  },
+  signUpLink: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#FFFFFF",
+    textDecorationLine: "underline",
   },
 });
