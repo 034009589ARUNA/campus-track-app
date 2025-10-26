@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import UploadWork from '../components/UploadWork';
+import UploadWork from '../../../components/UploadWork';
 
 const Assignment = () => {
   return (

@@ -2,9 +2,9 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import { Image, ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import DashboardCard from "../components/DashboardCard";
+import DashboardCard from "../../../components/DashboardCard";
 
-export default function HomeScreen() {
+export default function LecturerDashboard() {
   const navigation = useNavigation();
   const [attendance, setAttendance] = useState("Not marked yet");
   const [assignment, setAssignment] = useState("You have a pending assignment");
@@ -25,11 +25,11 @@ export default function HomeScreen() {
             <View style={styles.headerContainer}>
               <View style={styles.header}>
                 <Image 
-                  source={require("../assets/images/logo.png")} 
+                  source={require("../../../assets/images/logo.png")} 
                   style={styles.logo} 
                 />
                 <Image 
-                  source={require("../assets/images/profile.png")} 
+                  source={require("../../../assets/images/profile.png")} 
                   style={styles.profile} 
                 />
               </View>
@@ -53,7 +53,7 @@ export default function HomeScreen() {
                   textColor="#333"
                   onPress={() => {
                     setAttendance("Started ✅");
-                    navigation.navigate("Classes");
+                    navigation.navigate("Session");
                   }}
                 />
                 <DashboardCard
@@ -62,7 +62,7 @@ export default function HomeScreen() {
                   icon="book"
                   backgroundColor="#FFFFFF"
                   textColor="#333"
-                  onPress={() => navigation.navigate("Assignment")}
+                  onPress={() => navigation.navigate("Classes")}
                 />
               </View>
               

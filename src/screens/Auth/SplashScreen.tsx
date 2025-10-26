@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { RootStackParamList } from "../App";
+import { RootStackParamList } from "../../../App";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Splash">;
 
@@ -71,7 +71,7 @@ export default function SplashScreen({ navigation }: Props) {
         {/* Logo */}
         <View style={styles.logoContainer}>
           <Image
-            source={require("../assets/images/image1.png")}
+            source={require("../../../assets/images/image1.png")}
             style={styles.logo}
             resizeMode="contain"
           />

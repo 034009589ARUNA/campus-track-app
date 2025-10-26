@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native'; // ✅ added
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import {
@@ -17,7 +16,7 @@ import {
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { RootStackParamList } from "../App";
+import { RootStackParamList } from "../../../App";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -28,8 +27,6 @@ function LoginScreen({ navigation }: Props) {
   const [userType, setUserType] = useState("student"); // "student" or "lecturer"
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const navigations = useNavigation(); // ✅ added
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -57,8 +54,15 @@ function LoginScreen({ navigation }: Props) {
       // Simulate API call
       setTimeout(() => {
         setIsLoading(false);
-        // Navigate to Device Verification screen
-        navigation.replace("DeviceVerification", { studentEmail: email });
+        
+        // Navigate based on user type
+        if (userType === "student") {
+          // Navigate to Device Verification for students
+          navigation.replace("DeviceVerification", { studentEmail: email });
+        } else {
+          // Navigate directly to Lecturer app
+          navigation.replace("LecturerRoot");
+        }
       }, 1500);
     } catch (error) {
       setIsLoading(false);
@@ -71,7 +75,8 @@ function LoginScreen({ navigation }: Props) {
   };
 
   const handleSignUp = () => {
-    navigations.navigate("SignupForm");
+    // Navigate to Sign Up screen based on user type
+    navigation.navigate("SignUp", { userType: userType });
   };
 
   return (
@@ -95,7 +100,7 @@ function LoginScreen({ navigation }: Props) {
                 {/* Logo */}
                 <View style={styles.logoContainer}>
                   <Image
-                    source={require("../assets/images/image2.png")}
+                    source={require("../../../assets/images/image2.png")}
                     style={styles.logo}
                   />
                 </View>

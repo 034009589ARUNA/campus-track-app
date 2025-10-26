@@ -191,7 +191,7 @@ const ClassSessionCode = () => {
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>Session Duration (minutes)</Text>
                   <View style={styles.durationButtons}>
-                    {['15', '30', '60', '90', '120'].map((min) => (
+                    {['30', '60', '120', '180', '240'].map((min) => (
                       <TouchableOpacity
                         key={min}
                         style={[

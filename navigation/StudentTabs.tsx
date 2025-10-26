@@ -1,14 +1,17 @@
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
+
 
 import { ScrollView } from 'react-native-gesture-handler';
 import SettingsStack from '../components/SettingsStack';
-import Assignment from '../screens/Assignment';
-import Attendance from '../screens/Attendance';
-import Dashboard from '../screens/Dashboard';
+import Assignment from '../src/screens/Student/Assignment';
+import Attendance from '../src/screens/Student/Attendance';
+import Dashboard from '../src/screens/Student/Dashboard';
+
 
 const Tab = createBottomTabNavigator();
 const { width } = Dimensions.get('window');
@@ -176,7 +179,7 @@ const AIAssistant = () => {
 };
 
 // Custom Tab Bar Component with auto-hide
-const CustomTabBar = ({ state, descriptors, navigation }) => {
+{/*const CustomTabBar = ({ state, descriptors, navigation }) => {
   const translateY = useRef(new Animated.Value(0)).current;
 
   const hideTabBar = () => {
@@ -302,9 +305,9 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
       </View>
     </Animated.View>
   );
-};
+};  */}
 
-export default function Tabs() {
+export default function StudentTabs() {
   return (
     <SafeAreaView 
       style={{ flex: 1, backgroundColor: '#1B72B5' }} 

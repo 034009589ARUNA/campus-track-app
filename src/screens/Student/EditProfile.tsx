@@ -1,3 +1,4 @@
+import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -8,22 +9,27 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const EditProfile = ({ navigation }) => {
+  // Profile info state
+  const [profileImage, setProfileImage] = useState(
+    'https://images.unsplash.com/photo-1494790108755-2616b612b47c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
+  );
   const [fullName, setFullName] = useState('Aruna Kallon');
   const [email, setEmail] = useState('aruna.kallon@student.edu');
   const [phoneNumber, setPhoneNumber] = useState('+232 76 XX XX XX');
   const [department, setDepartment] = useState('Computer Science');
-  const [yearOfStudy, setYearOfStudy] = useState('3');
+  const [yearOfStudy, setYearOfStudy] = useState('1');
   const [bio, setBio] = useState('Passionate about learning and technology');
   const [studentID, setStudentID] = useState('CS2024001');
   const [campus, setCampus] = useState('Fourah Bay College');
   const [isSaving, setIsSaving] = useState(false);
-
+//Aruna Kallon coding
+  // Handle saving profile
   const handleSaveProfile = () => {
     if (!fullName.trim() || !email.trim()) {
       Alert.alert('Required Fields', 'Full Name and Email are required');
@@ -31,27 +37,61 @@ const EditProfile = ({ navigation }) => {
     }
 
     setIsSaving(true);
-    // Simulate API call
     setTimeout(() => {
       setIsSaving(false);
       Alert.alert('Success', 'Profile updated successfully!');
-      // Navigate back or refresh
-      if (navigation.goBack) {
-        navigation.goBack();
-      }
+      navigation.goBack?.();
     }, 1500);
   };
 
-  const handleChangePhoto = () => {
-    Alert.alert(
-      'Change Photo',
-      'How would you like to change your profile picture?',
-      [
-        { text: 'Take Photo', onPress: () => console.log('Camera') },
-        { text: 'Choose from Gallery', onPress: () => console.log('Gallery') },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+  // Handle changing photo
+  const handleChangePhoto = async () => {
+    const result = await new Promise((resolve) => {
+      Alert.alert(
+        'Change Photo',
+        'How would you like to change your profile picture?',
+        [
+          { text: 'Take Photo', onPress: () => resolve('camera') },
+          { text: 'Choose from Gallery', onPress: () => resolve('gallery') },
+          { text: 'Cancel', style: 'cancel', onPress: () => resolve(null) },
+        ]
+      );
+    });
+
+    if (!result) return;
+
+    // Request permissions
+    let permissionResult;
+    if (result === 'camera') {
+      permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    } else {
+      permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    }
+
+    if (permissionResult.status !== 'granted') {
+      Alert.alert('Permission Required', 'Permission is required to access this feature.');
+      return;
+    }
+
+    // Launch camera or gallery
+    let pickerResult;
+    if (result === 'camera') {
+      pickerResult = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.7,
+      });
+    } else {
+      pickerResult = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.7,
+      });
+    }
+
+    if (!pickerResult.cancelled) {
+      setProfileImage(pickerResult.uri);
+    }
   };
 
   return (
@@ -80,12 +120,7 @@ const EditProfile = ({ navigation }) => {
             {/* Profile Photo Section */}
             <View style={styles.photoSection}>
               <View style={styles.photoContainer}>
-                <Image
-                  source={{
-                    uri: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-                  }}
-                  style={styles.profileImage}
-                />
+                <Image source={{ uri: profileImage }} style={styles.profileImage} />
                 <TouchableOpacity
                   style={styles.photoChangeButton}
                   onPress={handleChangePhoto}
@@ -100,7 +135,6 @@ const EditProfile = ({ navigation }) => {
             <View style={styles.formSection}>
               <Text style={styles.sectionTitle}>Personal Information</Text>
 
-              {/* Full Name */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Full Name</Text>
                 <TextInput
@@ -112,7 +146,6 @@ const EditProfile = ({ navigation }) => {
                 />
               </View>
 
-              {/* Email */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Email Address</Text>
                 <TextInput
@@ -126,7 +159,6 @@ const EditProfile = ({ navigation }) => {
                 />
               </View>
 
-              {/* Phone Number */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Phone Number</Text>
                 <TextInput
@@ -139,7 +171,6 @@ const EditProfile = ({ navigation }) => {
                 />
               </View>
 
-              {/* Bio */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Bio</Text>
                 <TextInput
@@ -153,40 +184,34 @@ const EditProfile = ({ navigation }) => {
                 />
               </View>
 
-              {/* Academic Information */}
+              {/* Academic Info */}
               <Text style={[styles.sectionTitle, { marginTop: 30 }]}>
                 Academic Information
               </Text>
 
-              {/* Student ID */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Student ID</Text>
                 <TextInput
                   style={[styles.input, styles.disabledInput]}
-                  placeholder="Student ID"
                   value={studentID}
                   editable={false}
                 />
                 <Text style={styles.disabledText}>Cannot be changed</Text>
               </View>
 
-              {/* Department */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Department</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter department"
-                  placeholderTextColor="#999"
                   value={department}
                   onChangeText={setDepartment}
                 />
               </View>
 
-              {/* Year of Study */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Year of Study</Text>
                 <View style={styles.yearButtons}>
-                  {['1', '2', '3', '4'].map((year) => (
+                  {['1', '2', '3', '4', '5'].map((year) => (
                     <TouchableOpacity
                       key={year}
                       style={[
@@ -208,13 +233,10 @@ const EditProfile = ({ navigation }) => {
                 </View>
               </View>
 
-              {/* Campus */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Campus</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter campus"
-                  placeholderTextColor="#999"
                   value={campus}
                   onChangeText={setCampus}
                 />
@@ -222,25 +244,19 @@ const EditProfile = ({ navigation }) => {
 
               {/* Save Button */}
               <TouchableOpacity
-                style={[
-                  styles.saveButton,
-                  isSaving && styles.saveButtonDisabled,
-                ]}
+                style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
                 onPress={handleSaveProfile}
                 disabled={isSaving}
                 activeOpacity={0.8}
               >
-                {isSaving ? (
-                  <>
-                    <Icon name="loading" size={20} color="#FFFFFF" />
-                    <Text style={styles.saveButtonText}>Saving...</Text>
-                  </>
-                ) : (
-                  <>
-                    <Icon name="check-circle" size={20} color="#FFFFFF" />
-                    <Text style={styles.saveButtonText}>Save Changes</Text>
-                  </>
-                )}
+                <Icon
+                  name={isSaving ? 'loading' : 'check-circle'}
+                  size={20}
+                  color="#FFFFFF"
+                />
+                <Text style={styles.saveButtonText}>
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </Text>
               </TouchableOpacity>
 
               {/* Cancel Button */}
@@ -260,17 +276,11 @@ const EditProfile = ({ navigation }) => {
 
 export default EditProfile;
 
+// Styles (same as your previous version)
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#1B72B5',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 30,
-  },
+  safeArea: { flex: 1, backgroundColor: '#1B72B5' },
+  scrollView: { flex: 1 },
+  scrollContent: { paddingBottom: 30 },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -283,15 +293,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255,255,255,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-  },
+  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#FFFFFF' },
   contentContainer: {
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 30,
@@ -300,21 +306,9 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     minHeight: '100%',
   },
-  photoSection: {
-    alignItems: 'center',
-    marginBottom: 35,
-  },
-  photoContainer: {
-    position: 'relative',
-    marginBottom: 12,
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 4,
-    borderColor: '#1B72B5',
-  },
+  photoSection: { alignItems: 'center', marginBottom: 35 },
+  photoContainer: { position: 'relative', marginBottom: 12 },
+  profileImage: { width: 120, height: 120, borderRadius: 60, borderWidth: 4, borderColor: '#1B72B5' },
   photoChangeButton: {
     position: 'absolute',
     bottom: 0,
@@ -328,80 +322,20 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#FFFFFF',
   },
-  photoChangeText: {
-    fontSize: 13,
-    color: '#1B72B5',
-    fontWeight: '500',
-  },
-  formSection: {
-    flex: 1,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 20,
-    marginTop: 10,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 12,
-    padding: 14,
-    fontSize: 16,
-    backgroundColor: '#F8F9FA',
-    color: '#333',
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
-    paddingTop: 12,
-  },
-  disabledInput: {
-    backgroundColor: '#F0F0F0',
-    color: '#999',
-  },
-  disabledText: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 4,
-    fontStyle: 'italic',
-  },
-  yearButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
-  yearButton: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 10,
-    backgroundColor: '#F8F9FA',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    alignItems: 'center',
-  },
-  yearButtonActive: {
-    backgroundColor: '#1B72B5',
-    borderColor: '#1B72B5',
-  },
-  yearButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#666',
-  },
-  yearButtonTextActive: {
-    color: '#FFFFFF',
-  },
+  photoChangeText: { fontSize: 13, color: '#1B72B5', fontWeight: '500' },
+  formSection: { flex: 1 },
+  sectionTitle: { fontSize: 18, fontWeight: '600', color: '#333', marginBottom: 20, marginTop: 10 },
+  inputGroup: { marginBottom: 20 },
+  label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 8 },
+  input: { borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 12, padding: 14, fontSize: 16, backgroundColor: '#F8F9FA', color: '#333' },
+  textArea: { height: 100, textAlignVertical: 'top', paddingTop: 12 },
+  disabledInput: { backgroundColor: '#F0F0F0', color: '#999' },
+  disabledText: { fontSize: 12, color: '#999', marginTop: 4, fontStyle: 'italic' },
+  yearButtons: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
+  yearButton: { flex: 1, paddingVertical: 12, borderRadius: 10, backgroundColor: '#F8F9FA', borderWidth: 1, borderColor: '#E0E0E0', alignItems: 'center' },
+  yearButtonActive: { backgroundColor: '#1B72B5', borderColor: '#1B72B5' },
+  yearButtonText: { fontSize: 13, fontWeight: '600', color: '#666' },
+  yearButtonTextActive: { color: '#FFFFFF' },
   saveButton: {
     backgroundColor: '#1B72B5',
     borderRadius: 14,
@@ -417,25 +351,8 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
   },
-  saveButtonDisabled: {
-    opacity: 0.7,
-  },
-  saveButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '600',
-    marginLeft: 10,
-  },
-  cancelButton: {
-    borderWidth: 2,
-    borderColor: '#1B72B5',
-    borderRadius: 14,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    color: '#1B72B5',
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  saveButtonDisabled: { opacity: 0.7 },
+  saveButtonText: { color: '#FFFFFF', fontSize: 18, fontWeight: '600', marginLeft: 10 },
+  cancelButton: { borderWidth: 2, borderColor: '#1B72B5', borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
+  cancelButtonText: { color: '#1B72B5', fontSize: 16, fontWeight: '600' },
 });

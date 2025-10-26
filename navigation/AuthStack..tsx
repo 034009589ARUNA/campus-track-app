@@ -1,8 +1,8 @@
 // navigation/AuthStack.js
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import LoginScreen from "../components/LoginScreen";
-import SignupForm from "../components/SignupForm";
+import LoginScreen from "../src/screens/Auth/LoginScreen";
+import SignupForm from "../src/screens/Auth/SignupScreen";
 
 
 const Stack = createNativeStackNavigator();

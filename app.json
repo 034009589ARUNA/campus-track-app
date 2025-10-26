@@ -4,12 +4,16 @@
     "slug": "CampusTrack",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    //"icon": "./assets/images/icon.png",
     "scheme": "campustrack",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow CampusTrack to access your camera",
+        "NSPhotoLibraryUsageDescription": "Allow CampusTrack to access your photo library"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,11 +23,12 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": ["CAMERA", "WRITE_EXTERNAL_STORAGE", "READ_EXTERNAL_STORAGE"]
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      //"favicon": "./assets/images/favicon.png"
     },
     "plugins": [
       [
@@ -36,6 +41,13 @@
           "dark": {
             "backgroundColor": "#000000"
           }
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow CampusTrack to access your photos",
+          "cameraPermission": "Allow CampusTrack to access your camera"
         }
       ]
     ]

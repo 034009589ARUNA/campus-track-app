@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LocationPermission from '../components/LocationPermission';
+import LocationPermission from '../../../components/LocationPermission';
 
 const Attendance = () => {
   return (

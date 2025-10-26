@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import { Image, ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import DashboardCard from "../components/DashboardCard";
+import DashboardCard from "../../../components/DashboardCard";
 
 export default function Dashboard() {
   const navigation = useNavigation();
@@ -25,11 +25,11 @@ export default function Dashboard() {
             <View style={styles.headerContainer}>
               <View style={styles.header}>
                 <Image 
-                  source={require("../assets/images/logo.png")} 
+                  source={require("../../../assets/images/logo.png")} 
                   style={styles.logo} 
                 />
                 <Image 
-                  source={require("../assets/images/profile.png")} 
+                  source={require("../../../assets/images/profile.png")} 
                   style={styles.profile} 
                 />
               </View>

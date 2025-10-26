@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, View } from 'react-native';
-import ClassSessionCode from '../lecturer/ClassSessionCode';
-import HomeScreen from '../lecturer/HomeScreen';
+import ClassSessionCode from '../src/screens/Lecturer/ClassSessionCode';
+import LecturerDashboard from '../src/screens/Lecturer/LecturerDashboard';
 
 const Tab = createBottomTabNavigator();
 
@@ -35,7 +35,7 @@ function SettingsScreen() {
   );
 }
 
-export default function Tab2() {
+export default function LecturerTabs() {
   return (
     
       <Tab.Navigator
@@ -60,7 +60,7 @@ export default function Tab2() {
           headerShown: false,
         })}
       >
-        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Home" component={LecturerDashboard} />
         <Tab.Screen name="Classes" component={ClassSessionCode} />
         <Tab.Screen name="Code" component={CodeScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />

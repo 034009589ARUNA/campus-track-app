@@ -1,11 +1,11 @@
-import Language from "@/Setttings/Language";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import SetttingsScreen from "../screens/SettingsScreen";
-import ChangePassword from "../Setttings/ChangePassword";
-import EditProfile from "../Setttings/EditProfile";
-import GPSpermission from "../Setttings/GPSpermission";
-import Notifications from "../Setttings/Notifications";
+import ChangePassword from "../src/screens/Student/ChangePassword";
+import EditProfile from "../src/screens/Student/EditProfile";
+import GPSpermission from "../src/screens/Student/GPSpermission";
+import Language from "../src/screens/Student/Language";
+import Notifications from "../src/screens/Student/Notifications";
+import SetttingsScreen from "../src/screens/Student/StudentSettings";
 
 const Stack = createNativeStackNavigator();
 
