@@ -1,3 +1,4 @@
+// src/screens/Auth/LoginScreen.tsx
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import {
@@ -18,17 +19,22 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { RootStackParamList } from "../../../App";
 
+// ✅ Import your backend service and auth context
+import { authService } from "../../services/authService";
+import { useAuth } from "../../contexts/AuthContext";
+
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
 function LoginScreen({ navigation }: Props) {
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [userType, setUserType] = useState("student"); // "student" or "lecturer"
+  const [userType, setUserType] = useState(null); // "student" or "lecturer"
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
@@ -51,22 +57,43 @@ function LoginScreen({ navigation }: Props) {
 
     setIsLoading(true);
     try {
-      // Simulate API call
-      setTimeout(() => {
-        setIsLoading(false);
-        
+      // Call your backend API
+      const response = await authService.login(email, password, userType);
+
+      if (response.success) {
+        // Save auth data in context
+        await login(response.token, response.user, userType);
+
         // Navigate based on user type
         if (userType === "student") {
-          // Navigate to Device Verification for students
-          navigation.replace("DeviceVerification", { studentEmail: email });
+          navigation.replace("DeviceVerification", {
+            studentEmail: email,
+            token: response.token,
+          });
         } else {
-          // Navigate directly to Lecturer app
           navigation.replace("LecturerRoot");
         }
-      }, 1500);
-    } catch (error) {
+      } else {
+        Alert.alert("Login Failed", response.message || "Invalid credentials");
+      }
+    } catch (error: any) {
+      console.error("Login error:", error);
+
+      if (error.response) {
+        Alert.alert(
+          "Login Error",
+          error.response.data.message || "Invalid email or password"
+        );
+      } else if (error.request) {
+        Alert.alert(
+          "Network Error",
+          "Cannot connect to server. Please check your internet connection."
+        );
+      } else {
+        Alert.alert("Error", "An unexpected error occurred");
+      }
+    } finally {
       setIsLoading(false);
-      Alert.alert("Login Error", "An error occurred during login");
     }
   };
 
@@ -75,18 +102,21 @@ function LoginScreen({ navigation }: Props) {
   };
 
   const handleSignUp = () => {
-    // Navigate to Sign Up screen based on user type
-    navigation.navigate("SignUp", { userType: userType });
-  };
+  if (userType === "student") {
+    navigation.navigate("SignUpScreen");
+  } else if (userType === "lecturer") {
+    navigation.navigate("LecturerSignUpScreen");
+  } else {
+    Alert.alert("Select User Type", "Please choose whether you are a student or lecturer first.");
+  }
+};
+
 
   return (
     <>
       <StatusBar backgroundColor="#1B72B5" barStyle="light-content" />
       <SafeAreaProvider>
-        <SafeAreaView
-          style={styles.safeArea}
-          edges={["top", "left", "right"]}
-        >
+        <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
           <KeyboardAvoidingView
             style={styles.keyboardView}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -105,13 +135,13 @@ function LoginScreen({ navigation }: Props) {
                   />
                 </View>
 
-                {/* Header Text */}
+                {/* Header */}
                 <Text style={styles.title}>Connect to Your Classes</Text>
                 <Text style={styles.subtitle}>
                   Stay on top of your classes, assignments, and attendance
                 </Text>
 
-                {/* User Type Selection */}
+                {/* User Type */}
                 <View style={styles.userTypeContainer}>
                   <Text style={styles.userTypeLabel}>Login As</Text>
                   <View style={styles.userTypeButtons}>
@@ -161,9 +191,9 @@ function LoginScreen({ navigation }: Props) {
                   </View>
                 </View>
 
-                {/* Form Inputs */}
+                {/* Form */}
                 <View style={styles.formContainer}>
-                  {/* Email Input */}
+                  {/* Email */}
                   <View style={styles.inputGroup}>
                     <Text style={styles.label}>Email or Registration Number</Text>
                     <View style={styles.inputWrapper}>
@@ -181,7 +211,7 @@ function LoginScreen({ navigation }: Props) {
                     </View>
                   </View>
 
-                  {/* Password Input */}
+                  {/* Password */}
                   <View style={styles.inputGroup}>
                     <Text style={styles.label}>Password</Text>
                     <View style={styles.inputWrapper}>
@@ -195,9 +225,7 @@ function LoginScreen({ navigation }: Props) {
                         style={styles.input}
                         editable={!isLoading}
                       />
-                      <TouchableOpacity
-                        onPress={() => setShowPassword(!showPassword)}
-                      >
+                      <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                         <Icon
                           name={showPassword ? "eye" : "eye-off"}
                           size={20}
@@ -246,7 +274,6 @@ function LoginScreen({ navigation }: Props) {
                   <Text style={styles.forgotPasswordText}>Forgot password?</Text>
                 </TouchableOpacity>
 
-                {/* Divider */}
                 <View style={styles.divider} />
 
                 {/* Sign Up */}
@@ -266,7 +293,6 @@ function LoginScreen({ navigation }: Props) {
 }
 
 export default LoginScreen;
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,

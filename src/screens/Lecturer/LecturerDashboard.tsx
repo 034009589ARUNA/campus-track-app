@@ -6,10 +6,7 @@ import DashboardCard from "../../../components/DashboardCard";
 
 export default function LecturerDashboard() {
   const navigation = useNavigation();
-  const [attendance, setAttendance] = useState("Not marked yet");
-  const [assignment, setAssignment] = useState("You have a pending assignment");
-  const [messages, setMessages] = useState("Code has been sent");
-  const [subjects, setSubjects] = useState(5); // Example number
+  
 
   return (
     <>
@@ -47,42 +44,33 @@ export default function LecturerDashboard() {
               <View style={styles.cardsRow}>
                 <DashboardCard
                   title="Start Session"
-                  message={attendance}
                   icon="play-circle"
                   backgroundColor="#FFFFFF"
                   textColor="#333"
                   onPress={() => {
-                    setAttendance("Started ✅");
                     navigation.navigate("Session");
-                  }}
-                />
+                  } } message={""}                />
                 <DashboardCard
-                  title="View Assignment"
-                  message={assignment}
+                  title="Assignment"
                   icon="book"
                   backgroundColor="#FFFFFF"
                   textColor="#333"
-                  onPress={() => navigation.navigate("Classes")}
-                />
+                  onPress={() => navigation.navigate("Assignment")} message={""}                />
               </View>
               
               <View style={styles.cardsRow}>
                 <DashboardCard
                   title="Send Code"
-                  message={messages}
                   icon="message-text"
                   backgroundColor="#FFFFFF"
                   textColor="#333"
-                  onPress={() => setMessages("Code received ✔")}
-                />
+                  onPress={() => navigation.navigate("Chat")} message={""}                />
                 <DashboardCard
                   title="Student List"
-                  message={`${subjects} subjects`}
                   icon="account-group"
                   backgroundColor="#FFFFFF"
                   textColor="#333"
-                  onPress={() => navigation.navigate("Settings")}
-                />
+                  onPress={() => navigation.navigate("Settings")} message={""}                />
               </View>
             </View>
           </ScrollView>

@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 import { ScrollView } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 import SettingsStack from '../components/SettingsStack';
 import Assignment from '../src/screens/Student/Assignment';
 import Attendance from '../src/screens/Student/Attendance';
@@ -18,6 +19,7 @@ const { width } = Dimensions.get('window');
 
 // AI Screen Component
 const AIAssistant = () => {
+  const navigation = useNavigation();
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const [selectedFeature, setSelectedFeature] = useState(null);
 
@@ -141,6 +143,10 @@ const AIAssistant = () => {
           <TouchableOpacity 
             style={styles.aiChatButton}
             activeOpacity={0.8}
+            onPress={() => {
+              // Navigate to AI chat screen
+              navigation.navigate('AIChat' as never);
+            }}
           >
             <Icon name="message-text" size={20} color="#FFFFFF" style={styles.chatIcon} />
             <Text style={styles.aiChatText}>Start Conversation</Text>
@@ -314,9 +320,10 @@ export default function StudentTabs() {
       edges={['top', 'left', 'right']}
     >
       <Tab.Navigator
-        tabBar={(props) => <CustomTabBar {...props} />}
         screenOptions={{
           headerShown: false,
+          tabBarActiveTintColor: '#1B72B5',
+          tabBarInactiveTintColor: 'gray',
         }}
       >
         <Tab.Screen 
@@ -333,6 +340,11 @@ export default function StudentTabs() {
           name="AI" 
           component={AIAssistant}
           options={{ title: 'AI' }}
+          listeners={{
+            tabPress: (e) => {
+              // You can add navigation logic here if needed
+            },
+          }}
         />
         <Tab.Screen 
           name="Attendance" 

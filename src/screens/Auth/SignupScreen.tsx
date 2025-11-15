@@ -8,12 +8,24 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
+  Alert
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
+import axios from "axios";
+import api from '../../services/api'; // Adjust the path if needed
+//import { Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+type RootStackParamList = {
+  StudentRoot: undefined;
+  Login: undefined;
+};
 
 export default function SignUpScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   // Form states
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -24,6 +36,8 @@ export default function SignUpScreen() {
   const [yearOfStudy, setYearOfStudy] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
   // Gender dropdown
   const [genderOpen, setGenderOpen] = useState(false);
@@ -52,25 +66,65 @@ export default function SignUpScreen() {
     if (selectedDate) setDob(selectedDate);
   };
 
+ // Dropdown for studens and lecturers
+ const [userTypeOpen, setUserTypeOpen] = useState(false);
+const [userTypeValue, setUserTypeValue] = useState(null);
+const [userTypeItems, setUserTypeItems] = useState([
+  { label: "Student", value: "student" },
+  { label: "Lecturer", value: "lecturer" },
+]);
+
+
   // Handle form submit
-  const handleSubmit = () => {
-    const formData = {
-      fullName,
-      email,
-      password,
-      confirmPassword,
-      studentID,
-      department,
-      yearOfStudy,
-      phoneNumber,
-      address,
-      campus: campusValue,
-      gender: genderValue,
-      dateOfBirth: dob.toDateString(),
-    };
-    console.log("Form Submitted:", formData);
-    // send formData to backend here
+const handleSubmit = async () => {
+  const formData = {
+    fullName,
+    email,
+    password,
+    confirmPassword,
+    studentID,       // optional if lecturer
+    employeeID: "",  // optional if student
+    department,
+    yearOfStudy,     // optional if lecturer
+    campus: campusValue,
+    phoneNumber,
+    address,
+    gender: genderValue,
+    dateOfBirth: dob.toDateString(),
+    userType: userTypeValue, // must come from your dropdown
   };
+
+  console.log("Submitting:", formData);
+
+  try {
+    const response = await axios.post(
+      "http://192.168.0.200:5000/api/auth/signup",
+      formData
+    );
+
+    if (response.data.success) {
+      console.log("Signup successful:", response.data);
+      // maybe navigate to login or home screen
+      Alert.alert("Success", "Account created successfully!", [
+          { text: "OK", onPress: () => {
+            // Navigate to login or home screen
+            navigation.navigate('StudentRoot');
+          }},
+        ]);
+    } else {
+      console.log("Signup error:", response.data);
+      alert(response.data.message);
+    }
+  } catch (error) {
+    console.log("API Error:", error.response?.data || error.message);
+    alert(error.response?.data?.message || "Signup failed");
+  }
+};
+
+  const handleSignIn = () => {
+    navigation.navigate("Login");
+  }
+
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
@@ -116,30 +170,46 @@ export default function SignUpScreen() {
               />
             </View>
 
-            {/* Password */}
+             {/* Password */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Create a password"
-                placeholderTextColor="#999"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="Create a password"
+                  placeholderTextColor="#999"
+                  secureTextEntry={!showPassword}
+                  value={password}
+                  onChangeText={setPassword}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.eyeButton}
+                >
+                  <Text style={styles.eyeText}>{showPassword ? "Hide" : "Show"}</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* Confirm Password */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Confirm Password</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Re-enter your password"
-                placeholderTextColor="#999"
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="Re-enter your password"
+                  placeholderTextColor="#999"
+                  secureTextEntry={!showConfirmPassword}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  style={styles.eyeButton}
+                >
+                  <Text style={styles.eyeText}>{showConfirmPassword ? "Hide" : "Show"}</Text>
+                </TouchableOpacity>
+            </View>
             </View>
 
             {/* Student ID */}
@@ -265,6 +335,27 @@ export default function SignUpScreen() {
               )}
             </View>
 
+            {/* User Type Dropdown */}
+            <View style={[styles.inputGroup, { zIndex: 3000 }]}>
+  <Text style={styles.label}>User Type</Text>
+  <DropDownPicker
+    open={userTypeOpen}
+    value={userTypeValue}
+    items={userTypeItems}
+    setOpen={setUserTypeOpen}
+    setValue={setUserTypeValue}
+    setItems={setUserTypeItems}
+    placeholder="Select user type"
+    style={styles.dropdown}
+    dropDownContainerStyle={styles.dropdownContainer}
+    textStyle={styles.dropdownText}
+    placeholderStyle={styles.dropdownPlaceholder}
+    zIndex={3000}
+    zIndexInverse={1000}
+  />
+</View>
+
+
             {/* Submit Button */}
             <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
               <Text style={styles.submitText}>Create Account</Text>
@@ -273,7 +364,9 @@ export default function SignUpScreen() {
             <View style={styles.footer}>
               <Text style={styles.footerText}>
                 Already have an account?{" "}
-                <Text style={styles.footerLink}>Sign In</Text>
+                <TouchableOpacity onPress={handleSignIn}>
+                    <Text style={styles.footerLink}>Sign In</Text>
+                  </TouchableOpacity>
               </Text>
             </View>
           </View>
@@ -401,4 +494,27 @@ const styles = StyleSheet.create({
     color: "#1B72B5",
     fontWeight: "600",
   },
+   eyeButton: {
+    padding: 8,
+  },
+  eyeText: {
+    fontSize: 12,
+    color: "#1B72B5",
+    fontWeight: "600",
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 12,
+    backgroundColor: "#F8F9FA",
+    paddingRight: 10,
+  },
+   passwordInput: {
+    flex: 1,
+    padding: 14,
+    fontSize: 16,
+    color: "#333",
+  }
 });

@@ -189,6 +189,11 @@ export default function SettingsScreen() {
                   onPress={handlePress}
                   isLast={true}
                 />
+                <SettingsItem
+                  icon="📱"
+                  title="Logout"
+                  onPress={() => navigation.navigate("LogoutScreen")}
+                />
               </SettingsGroup>
 
               <View style={styles.bottomSpacing} />

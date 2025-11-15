@@ -10,7 +10,7 @@ import LogoutScreen from "../src/screens/Auth/LogoutScreen";
 
 const Stack = createNativeStackNavigator();
 
-export default function SettingsStack() {
+export default function SettingsStackL() {
   return (
     <Stack.Navigator>
     <Stack.Screen

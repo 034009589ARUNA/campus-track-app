@@ -1,4 +1,5 @@
-import { useNavigation } from '@react-navigation/native'; // ✅ added
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
   Image,
@@ -11,6 +12,14 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+type RootStackParamList = {
+  EditProfile: undefined;
+  ChangePassword: undefined;
+  Language: undefined;
+  Notifications: undefined;
+  GPSpermission: undefined;
+  LogoutScreen: undefined;
+};
 
 // Icons
 const ChevronRightIcon = ({ isDark }) => (
@@ -19,18 +28,18 @@ const ChevronRightIcon = ({ isDark }) => (
 
 export default function Settings() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const navigation = useNavigation(); // ✅ added
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     console.log('Theme toggled:', !isDarkMode ? 'Dark' : 'Light');
   };
 
-  const handlePress = (option) => {
+  const handlePress = (option: string) => {
     console.log(`${option} pressed`);
   };
 
-  const SettingsGroup = ({ title, children }) => (
+  const SettingsGroup = ({ title, children }: { title: string, children: React.ReactNode }) => (
     <View style={styles.settingsGroup}>
       <Text style={[styles.groupTitle, isDarkMode && styles.groupTitleDark]}>{title}</Text>
       <View style={[styles.groupContainer, isDarkMode && styles.groupContainerDark]}>
@@ -39,7 +48,15 @@ export default function Settings() {
     </View>
   );
 
-  const SettingsItem = ({ icon, title, onPress, isLast = false, showToggle = false }) => (
+  interface SettingsItemProps {
+    icon: string;
+    title: string;
+    onPress: (title: string) => void;
+    isLast?: boolean;
+    showToggle?: boolean;
+  }
+
+  const SettingsItem = ({ icon, title, onPress, isLast = false, showToggle = false }: SettingsItemProps) => (
     <TouchableOpacity
       style={[
         styles.settingsItem,
@@ -188,6 +205,11 @@ export default function Settings() {
                   title="2-Step Auth"
                   onPress={handlePress}
                   isLast={true}
+                />
+                <SettingsItem
+                  icon="📱"
+                  title="Logout"
+                  onPress={() => navigation.navigate("LogoutScreen")}
                 />
               </SettingsGroup>
 
